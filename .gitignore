@@ -1,7 +1,7 @@
 # Root .gitignore
 
 # Frontend
-frontend/.gitignore
+FrontEnd/.gitignore
 
 # Backend
 backend/.gitignore
