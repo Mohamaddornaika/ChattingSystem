@@ -1,0 +1,21 @@
+<!-- chat-form.component.html -->
+
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Start New Chat</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label position="floating">Enter username</ion-label>
+    <ion-input [(ngModel)]="newChatUsername" autofocus></ion-input>
+  </ion-item>
+
+  <ion-button expand="full" (click)="startChat()">Start Chat</ion-button>
+</ion-content>
