@@ -1,0 +1,12 @@
+/* login.page.scss */
+
+.register-link {
+  color: #3880ff; /* Set the initial color to blue */
+  cursor: pointer; /* Change the cursor to a pointer on hover */
+  transition: color 0.3s ease; /* Add a smooth transition effect for color changes */
+}
+
+/* Change the color on hover */
+.register-link:hover {
+  color: cyan; /* Change the color to cyan on hover (you can use any color you prefer) */
+}

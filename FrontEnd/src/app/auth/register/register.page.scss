@@ -1,0 +1,41 @@
+.login-link {
+  color: #3880ff; /* Set the initial color to blue */
+  cursor: pointer; /* Change the cursor to a pointer on hover */
+  transition: color 0.3s ease; /* Add a smooth transition effect for color changes */
+}
+
+/* Change the color on hover */
+.login-link:hover {
+  color: cyan; /* Change the color to cyan on hover (you can use any color you prefer) */
+}
+/* register.page.scss */
+
+/* register.page.scss */
+
+.profile-picture-container {
+  margin: 20px auto;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  background-color: #ddd; /* Add a background color for a placeholder effect */
+  cursor: pointer;
+  margin: 1vh auto; /* Center the container horizontally */
+}
+
+.profile-picture-container img,
+.profile-picture-container ion-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block; /* Ensure the image takes up the full container */
+}
+
+.profile-picture-container input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}

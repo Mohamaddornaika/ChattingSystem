@@ -1,0 +1,39 @@
+<!-- login.page.html -->
+
+<ion-content>
+  <ion-content class="ion-padding">
+    <ion-grid
+      style="
+        height: 80vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      "
+    >
+      <ion-row>
+        <ion-col size-md="12" size-lg="8" size-xl="6" style="max-width: 400px">
+          <!-- Your form content goes here -->
+          <ion-item>
+            <ion-label position="floating">Username</ion-label>
+            <ion-input [(ngModel)]="username"></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating">Password</ion-label>
+            <ion-input type="password" [(ngModel)]="password"></ion-input>
+          </ion-item>
+
+          <ion-button expand="full" (click)="login()">Login</ion-button>
+
+          <p>
+            Don't have an account?
+            <span (click)="goToRegister()" class="register-link"
+              >Register here</span
+            >.
+          </p>
+        </ion-col>
+      </ion-row></ion-grid
+    >
+  </ion-content>
+</ion-content>
