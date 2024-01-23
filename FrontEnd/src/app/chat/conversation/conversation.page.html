@@ -1,13 +1,48 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>conversation</ion-title>
+    <ion-title>Conversation</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">conversation</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let message of messages">
+      <div class="avatar-container">
+        <!-- Place ion-avatar outside the div for the sender using absolute positioning -->
+        <ion-avatar *ngIf="message.senderId === 1" class="avatar-sender">
+          <img [src]="message.userAvatar" alt="Profile Picture" />
+        </ion-avatar>
+        <!-- Place ion-avatar outside the div for the recipient using absolute positioning -->
+        <ion-avatar *ngIf="message.senderId !== 1" class="avatar-recipient">
+          <img [src]="message.userAvatar" alt="Profile Picture" />
+        </ion-avatar>
+      </div>
+      <div
+        class="message-container"
+        [ngClass]="{ 'message-sender': message.senderId === 1, 'message-recipient': message.senderId !== 1 }"
+      >
+        <div class="message-content">
+          <!-- Use the built-in DatePipe to format the timestamp -->
+          <div class="message-timestamp">
+            {{ message.timestamp | date: 'HH:mm' }}
+          </div>
+          <div class="message-text">{{ message.content }}</div>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <div class="fixed-input-container">
+    <ion-item lines="none" class="input-item">
+      <ion-input
+        placeholder="Type your message..."
+        [(ngModel)]="newMessage"
+        class="input-field"
+      >
+      </ion-input>
+      <ion-button class="send-button" (click)="sendMessage()" shape="round">
+        <ion-icon name="send"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </div>
 </ion-content>

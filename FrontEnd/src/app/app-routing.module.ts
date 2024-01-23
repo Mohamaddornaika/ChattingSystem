@@ -29,7 +29,7 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'conversation/:id',
+    path: 'conversation/:chat_id',
     loadChildren: () =>
       import('./chat/conversation/conversation.module').then(
         (m) => m.ConversationPageModule
