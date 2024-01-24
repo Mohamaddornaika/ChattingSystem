@@ -1,5 +1,4 @@
 const db = require('./db.model.js');
-const userModel = require('./user.model.js');
 async function createConversation(user1Id, user2Id) {
   if (!user1Id || !user2Id) {
     throw new Error('User not found');
@@ -21,9 +20,6 @@ async function getAllConversationsForUser(userId) {
   return results;
 }
 
-module.exports = {
-  getAllConversationsForUser,
-};
 module.exports = {
   createConversation,
   getAllConversationsForUser,

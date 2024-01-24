@@ -1,4 +1,3 @@
-const db = require('../models/db.model');
 const chatModel = require('../models/chat.model');
 const userModel = require('../models/user.model.js');
 async function createConversation(req, res) {
