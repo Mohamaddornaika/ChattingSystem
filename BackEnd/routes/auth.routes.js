@@ -14,4 +14,7 @@ router.post(
   authController.createUser,
 );
 
+router.post('/login', verifyToken, authController.loginUser);
+router.get('/getUserFromEmail', verifyToken, authController.getUserFromEmail);
+
 module.exports = router;
