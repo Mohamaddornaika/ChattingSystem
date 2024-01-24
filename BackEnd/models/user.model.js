@@ -15,6 +15,11 @@ async function getUserByEmail(email) {
   const [results] = await db.query(query, [email]);
   return results[0] || null;
 }
+async function getUserIdByEmail(email) {
+  const query = 'SELECT user_id FROM users WHERE email = ?';
+  const [results] = await db.query(query, [email]);
+  return results[0] || null;
+}
 
 async function comparePasswords(inputPassword, hashedPassword) {
   return inputPassword === hashedPassword;
@@ -33,4 +38,5 @@ module.exports = {
   getUserByEmail,
   comparePasswords,
   getUserByEmailWithoutPassword,
+  getUserIdByEmail,
 };

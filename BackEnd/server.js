@@ -11,6 +11,7 @@ app.use(helmet()); // Set security headers
 
 // Define routes
 app.use('/auth', authRoutes);
+app.use('/chat', chatRoutes);
 //app.use('/chat', chatRoutes);
 // Add routes for other entities (doctors, appointments, files) as needed
 
