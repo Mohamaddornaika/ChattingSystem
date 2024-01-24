@@ -34,25 +34,33 @@ db.query('CREATE DATABASE IF NOT EXISTS chat_app', (createDbErr) => {
         }
         console.log('users Table created or already exists');
         db.query(
-          `CREATE TABLE IF NOT EXISTS chats (
-    chat_id INT AUTO_INCREMENT PRIMARY KEY,
-    chat_name VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          `CREATE TABLE IF NOT EXISTS conversations (
+    conversation_id INT AUTO_INCREMENT PRIMARY KEY,
+    user1_id INT,
+    user2_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_user_pair (user1_id, user2_id),
+    FOREIGN KEY (user1_id) REFERENCES users(user_id),
+    FOREIGN KEY (user2_id) REFERENCES users(user_id)
 );`,
           (createTableErr) => {
             if (createTableErr) {
-              console.error('Error creating chats table:', createTableErr);
+              console.error(
+                'Error creating conversations table:',
+                createTableErr,
+              );
               return;
             }
-            console.log('chats table created or already exists');
+            console.log('conversations table created or already exists');
             db.query(
-              `CREATE TABLE IF NOT EXISTS user_chats (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    chat_id INT,
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (chat_id) REFERENCES chats(chat_id),
-    UNIQUE KEY unique_user_chat (user_id, chat_id)
+              `CREATE TABLE IF NOT EXISTS messages (
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    conversation_id INT,
+    sender_id INT,
+    content TEXT,
+    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (conversation_id) REFERENCES conversations(conversation_id),
+    FOREIGN KEY (sender_id) REFERENCES users(user_id)
 );`,
               (createTableErr) => {
                 if (createTableErr) {
@@ -60,28 +68,7 @@ db.query('CREATE DATABASE IF NOT EXISTS chat_app', (createDbErr) => {
                   return;
                 }
 
-                console.log('user_chats table created or already exists');
-                db.query(
-                  `CREATE TABLE IF NOT EXISTS messages (
-    message_id INT AUTO_INCREMENT PRIMARY KEY,
-    chat_id INT,
-    user_id INT,
-    content TEXT,
-    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (chat_id) REFERENCES chats(chat_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);`,
-                  (createTableErr) => {
-                    if (createTableErr) {
-                      console.error(
-                        'Error creating messages table:',
-                        createTableErr,
-                      );
-                      return;
-                    }
-                    console.log('messages table created or already exists');
-                  },
-                );
+                console.log('messages table created or already exists');
               },
             );
           },
