@@ -18,7 +18,7 @@ async function createConversation(req, res) {
   }
 }
 async function getAllConversations(req, res) {
-  const userId = req.body.userId;
+  const userId = req.params.userId;
   try {
     const conversations = await chatModel.getAllConversationsForUser(userId);
 

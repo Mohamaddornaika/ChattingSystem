@@ -2,8 +2,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage-angular';
-import { tap } from 'rxjs/operators';
+import { tap, map, catchError } from 'rxjs/operators';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,6 @@ export class AuthService {
   private apiUrl = 'http://localhost:3000';
   private tokenKey = 'MohamadSecureCode1999';
   private storageReady = false;
-
   constructor(
     private http: HttpClient,
     private storage: Storage,
@@ -28,6 +28,27 @@ export class AuthService {
     } catch (error) {
       console.error('Error initializing storage', error);
     }
+  }
+  async getConversations() {
+    const userDetails = await this.storage.get('user-details');
+    const userId = userDetails.userId;
+    const authToken = await this.storage.get(this.tokenKey);
+
+    // Check if the token is available
+    if (!authToken) {
+      throw new Error('Authorization token not found.');
+    }
+
+    // Set the headers with the Authorization token
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${authToken}`,
+    });
+    console.log(userId);
+
+    return this.http.get(`${this.apiUrl}/chat/conversationsList/${userId}`, {
+      headers,
+      withCredentials: true,
+    });
   }
 
   register(formData: FormData) {
@@ -53,9 +74,9 @@ export class AuthService {
 
   login(loginData: any) {
     // Assuming you get a token after successful login
-    const token = 'MohamadSecureCode1999';
     return this.http.post(`${this.apiUrl}/auth/login`, loginData).pipe(
       tap((response: any) => {
+        console.log(response);
         const decodedToken = this.jwtHelper.decodeToken(response.token);
         console.log(decodedToken);
         const profilePictureArray = new Uint8Array(
@@ -63,11 +84,11 @@ export class AuthService {
             .split('')
             .map((char) => char.charCodeAt(0))
         );
-
+        console.log(decodedToken);
         // Save token and user data to Ionic Storage
         this.storage.set(this.tokenKey, response.token);
         this.storage.set('user-details', {
-          ...response.user,
+          ...decodedToken,
           profilePicture: profilePictureArray,
         });
       })

@@ -10,7 +10,13 @@ const cors = require('cors');
 // Configure security middleware
 app.use(bodyParser.json()); // Parse JSON request bodies
 app.use(helmet()); // Set security headers
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:8100',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  }),
+);
 // Define routes
 app.use('/auth', authRoutes);
 app.use('/chat', chatRoutes);
