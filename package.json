@@ -1,0 +1,1 @@
+{"name":"chatting-system-app","version":"1.0.0","scripts":{"start":"concurrently \"npm run start-backend\" \"npm run start-frontend\"","start-backend":"cd BackEnd && nodemon server.js","start-frontend":"cd FrontEnd && ionic serve"},"devDependencies":{"concurrently":"^8.2.2","nodemon":"^3.0.3"}}

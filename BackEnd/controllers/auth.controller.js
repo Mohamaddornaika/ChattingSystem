@@ -27,16 +27,19 @@ async function createUser(req, res) {
 
     // If successful, generate a JWT token
     const user = { email: email };
+    const profilePictureBuffer = user.profile_picture;
+    const profilePictureBase64 = profilePictureBuffer.toString('base64');
+
     const token = jwt.sign(
       {
         userId: user.user_id,
         username: user.username,
         email: user.email,
-        profilePicture: profilePicture,
+        profilePicture: profilePictureBase64,
+        // Add more user details as needed
       },
       secretKey,
     );
-
     // Respond with success
     res.status(201).json({ success: true, token });
   } catch (error) {
@@ -49,11 +52,10 @@ async function createUser(req, res) {
 
 async function loginUser(req, res) {
   const { email, password } = req.body;
-
+  console.log(req.body);
   try {
     // Step 2: Query the database to check if the user exists
     const user = await db.getUserByEmail(email);
-
     if (!user) {
       return res.status(401).json({ error: 'User not found' });
     }
@@ -68,13 +70,14 @@ async function loginUser(req, res) {
 
     // Retrieve the profile picture buffer from the request
     const profilePictureBuffer = user.profile_picture;
+    const profilePictureBase64 = profilePictureBuffer.toString('base64');
 
     const token = jwt.sign(
       {
         userId: user.user_id,
         username: user.username,
         email: user.email,
-        profilePicture: profilePictureBuffer,
+        profilePicture: profilePictureBase64,
         // Add more user details as needed
       },
       secretKey,

@@ -5,3 +5,5 @@ FrontEnd/.gitignore
 
 # Backend
 backend/.gitignore
+
+node_modules/

@@ -9,12 +9,11 @@ const storage = multer.memoryStorage(); // Store file in memory as a Buffer
 const upload = multer({ storage: storage });
 router.post(
   '/register',
-  verifyToken,
   upload.single('profile_picture'),
   authController.createUser,
 );
 
-router.post('/login', verifyToken, authController.loginUser);
+router.post('/login', authController.loginUser);
 router.get('/getUserFromEmail', verifyToken, authController.getUserFromEmail);
 
 module.exports = router;

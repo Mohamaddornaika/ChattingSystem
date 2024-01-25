@@ -13,6 +13,7 @@ async function getUserByEmail(email) {
   const query =
     'SELECT user_id, username, email, password, profile_picture FROM users WHERE email = ?';
   const [results] = await db.query(query, [email]);
+  console.log(email);
   return results[0] || null;
 }
 async function getUserIdByEmail(email) {
