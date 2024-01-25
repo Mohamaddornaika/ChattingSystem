@@ -8,7 +8,8 @@ const messageRoutes = require('./routes/message.routes');
 const cors = require('cors');
 
 // Configure security middleware
-app.use(bodyParser.json()); // Parse JSON request bodies
+
+app.use(bodyParser.json({ limit: '100mb' })); // Parse JSON request bodies
 app.use(helmet()); // Set security headers
 app.use(
   cors({

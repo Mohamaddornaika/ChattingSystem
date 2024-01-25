@@ -9,19 +9,21 @@
 <ion-content>
   <ion-list>
     <!-- List of active chats -->
-    <!-- <ion-item
+    <ion-item
       *ngFor="let chat of activeChats"
       (click)="openConversation(chat.id)"
     >
       <ion-avatar slot="start">
-        <ion-img [src]="chat.userAvatar"></ion-img>
+        <ion-img
+          [src]="getImageSrc(chat.otherUserProfilePicture.data)"
+        ></ion-img>
       </ion-avatar>
       <ion-label>
-        <h2>{{ chat.userName }}</h2>
+        <h2>{{ chat.otherUserUsername }}</h2>
         <p>{{ chat.lastMessage }}</p>
-        <p class="timestamp">{{ chat.timestamp | date:'mediumTime' }}</p>
+        <p class="timestamp">{{ chat.sent_at | date:'mediumTime' }}</p>
       </ion-label>
-    </ion-item>-->
+    </ion-item>
   </ion-list>
 
   <!-- Button to initiate new conversation -->

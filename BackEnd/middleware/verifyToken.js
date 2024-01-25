@@ -3,19 +3,11 @@ const jwt = require('jsonwebtoken');
 const secretKey = 'MohamadSecureCode1999';
 
 function verifyToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
+  const token = req.body.token;
 
-  if (!authHeader) {
+  if (!token) {
     return res.status(403).json({ error: 'No token provided' });
   }
-
-  const tokenParts = authHeader.split(' ');
-
-  if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
-    return res.status(403).json({ error: 'Invalid token format' });
-  }
-
-  const token = tokenParts[1]; // Get the token without the "Bearer" prefix
 
   jwt.verify(token, secretKey, (err, decoded) => {
     if (err) {

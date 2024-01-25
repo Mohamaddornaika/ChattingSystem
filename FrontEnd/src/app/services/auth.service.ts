@@ -39,16 +39,17 @@ export class AuthService {
       throw new Error('Authorization token not found.');
     }
 
-    // Set the headers with the Authorization token
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${authToken}`,
-    });
     console.log(userId);
+    console.log(authToken);
+    const requestBody = {
+      token: authToken,
+    };
 
-    return this.http.get(`${this.apiUrl}/chat/conversationsList/${userId}`, {
-      headers,
-      withCredentials: true,
-    });
+    // Send a POST request with the token in the request body
+    return this.http.post(
+      `${this.apiUrl}/chat/getAllConversationsForUserWithDetails/${userId}`,
+      requestBody
+    );
   }
 
   register(formData: FormData) {
@@ -95,7 +96,53 @@ export class AuthService {
     );
   }
 
-  // Other methods...
+  public async getChatOrder(list: any) {
+    const chatOrderArray = [];
+    const userDetails = await this.storage.get('user-details');
+    const userId = userDetails.userId;
+    for (const conversationDetails of list) {
+      let otherUserId,
+        otherUserUsername,
+        otherUserProfilePicture,
+        sentOrReceived;
+      let lastMessage = conversationDetails.content,
+        sent_at = conversationDetails.sent_at;
+      // Determine if the current user is the sender or receiver
+      if (userId === conversationDetails.sender_id) {
+        sentOrReceived = 'sent';
+      } else {
+        sentOrReceived = 'received';
+      }
+
+      // Determine the other user in the conversation
+      if (conversationDetails.user1_id === userId) {
+        otherUserId = conversationDetails.user2_id;
+        otherUserUsername = conversationDetails.user2_username;
+        otherUserProfilePicture = conversationDetails.user2_profile_picture;
+      } else if (conversationDetails.user2_id === userId) {
+        otherUserId = conversationDetails.user1_id;
+        otherUserUsername = conversationDetails.user1_username;
+        otherUserProfilePicture = conversationDetails.user1_profile_picture;
+      } else {
+        throw new Error('User not found in the conversation.');
+      }
+      // Create an object with the required information
+      const chatOrderObject = {
+        otherUserId,
+        sent_at,
+        otherUserUsername,
+        otherUserProfilePicture,
+        sentOrReceived,
+        lastMessage,
+      };
+
+      // Push the object to the array
+      chatOrderArray.push(chatOrderObject);
+    }
+    // Now, chatOrderArray contains an array of JSON objects with the required information
+    console.log('Chat Order Array:', chatOrderArray);
+    return chatOrderArray;
+  }
 
   private getHeaders(): HttpHeaders {
     const token = 'MohamadSecureCode1999'; // Replace with the actual token

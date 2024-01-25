@@ -6,9 +6,14 @@ const verifyToken = require('../middleware/verifyToken');
 
 // Create Conversation route
 router.post('/createConversation', chatController.createConversation);
-router.get(
+router.post(
   '/conversationsList/:userId',
   verifyToken,
   chatController.getAllConversations,
+);
+router.post(
+  '/getAllConversationsForUserWithDetails/:userId',
+  verifyToken,
+  chatController.getAllConversationsForUserWithDetails,
 );
 module.exports = router;
