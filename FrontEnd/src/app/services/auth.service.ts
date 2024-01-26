@@ -4,7 +4,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Storage } from '@ionic/storage-angular';
 import { tap, map, catchError } from 'rxjs/operators';
 import { JwtHelperService, JWT_OPTIONS } from '@auth0/angular-jwt';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { NavigationExtras, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,8 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private storage: Storage,
-    private jwtHelper: JwtHelperService
+    private jwtHelper: JwtHelperService,
+    private router: Router
   ) {
     this.initStorage();
   }
@@ -36,11 +38,10 @@ export class AuthService {
 
     // Check if the token is available
     if (!authToken) {
+      this.router.navigate(['/login']);
       throw new Error('Authorization token not found.');
     }
-
-    console.log(userId);
-    console.log(authToken);
+    console.log(userDetails);
     const requestBody = {
       token: authToken,
     };
@@ -51,7 +52,172 @@ export class AuthService {
       requestBody
     );
   }
+  async getMyProfilePc() {
+    const userDetails = await this.storage.get('user-details');
+    return userDetails.profilePicture;
+  }
+  async getConversationsWith(user2Id: any) {
+    const userDetails = await this.storage.get('user-details');
+    const user1Id = userDetails.userId;
+    const authToken = await this.storage.get(this.tokenKey);
 
+    // Check if the token is available
+    if (!authToken) {
+      this.router.navigate(['/login']);
+      throw new Error('Authorization token not found.');
+    }
+
+    const requestBody = {
+      token: authToken,
+    };
+    console.log(user1Id);
+    // Send a POST request with the token in the request body
+    return this.http
+      .post(
+        `${this.apiUrl}/chat/getAllConversationsFor2Users/${user1Id}/${user2Id}`,
+        requestBody
+      )
+      .pipe(
+        tap(async (response: any) => {
+          console.log(response);
+          if (response.conversations.length !== 0) {
+            console.log(response.conversations[0].conversation_id);
+            const conversation_id = response.conversations[0].conversation_id;
+            this.storage.set('conversation_id', {
+              conversation_id,
+            });
+          } else {
+            console.log('creating convo');
+            await this.startConv(user2Id, user1Id);
+          }
+        })
+      );
+  }
+  async sentMessage(content: String) {
+    const authToken = await this.storage.get(this.tokenKey);
+    const conversation_idjson = await this.storage.get('conversation_id');
+    ('user-details');
+    const user_details = await this.storage.get('user-details');
+    const userId = user_details.userId;
+    const conversationId = conversation_idjson.conversation_id;
+    // Check if the token is available
+    if (!authToken) {
+      this.router.navigate(['/login']);
+      throw new Error('Authorization token not found.');
+    }
+    console.log(userId);
+    const requestBody = {
+      content,
+      conversationId,
+      userId,
+      token: authToken,
+    };
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+    console.log(requestBody);
+    // Send a POST request with the token in the request body
+    return this.http
+      .post(`${this.apiUrl}/message/sendMessages`, requestBody, {
+        headers,
+      })
+      .subscribe(
+        (response) => {
+          console.log('Message sent successfully', response);
+          // Handle any additional logic after sending the message
+        },
+        (error) => {
+          console.error('Error sending message', error);
+          // Handle the error, if needed
+        }
+      );
+  }
+  async getAllMessagesforConv(convoId: any) {
+    const authToken = await this.storage.get(this.tokenKey);
+
+    // Check if the token is available
+    if (!authToken) {
+      this.router.navigate(['/login']);
+      throw new Error('Authorization token not found.');
+    }
+
+    const requestBody = {
+      token: authToken,
+    };
+    // Send a POST request with the token in the request body
+    return this.http.post(
+      `${this.apiUrl}/message/messages/${convoId}`,
+      requestBody
+    );
+  }
+  async startConv(user2Id: any, user1Id: any) {
+    const authToken = await this.storage.get(this.tokenKey);
+
+    // Check if the token is available
+    if (!authToken) {
+      this.router.navigate(['/login']);
+      throw new Error('Authorization token not found.');
+    }
+
+    const requestBody = {
+      token: authToken,
+      user1Id,
+      user2Id,
+    };
+    // Send a POST request with the token in the request body
+    return this.http
+      .post(`${this.apiUrl}/chat/createConversation`, requestBody)
+      .subscribe(
+        (response: { [key: string]: any }) => {
+          console.log(response);
+          const conversation_id = response['conversationId'];
+          // console.log(responseSaved.conversations);
+          // const conversation_id = response.conversations[0].conversation_id;
+          this.storage.set('conversation_id', {
+            conversation_id,
+          });
+          // Handle any additional logic after sending the message
+        },
+        (error) => {
+          console.error('Error sending message', error);
+          // Handle the error, if needed
+        }
+      );
+  }
+  async getOtherUserId(email: String) {
+    const authToken = await this.storage.get(this.tokenKey);
+
+    // Check if the token is available
+    if (!authToken) {
+      this.router.navigate(['/login']);
+      throw new Error('Authorization token not found.');
+    }
+
+    const requestBody = {
+      token: authToken,
+      email,
+    };
+
+    // Send a POST request with the token in the request body
+    return this.http.post(`${this.apiUrl}/auth/getUserFromEmail`, requestBody);
+  }
+  async getOtherUserById(userId: String) {
+    const authToken = await this.storage.get(this.tokenKey);
+
+    // Check if the token is available
+    if (!authToken) {
+      this.router.navigate(['/login']);
+      throw new Error('Authorization token not found.');
+    }
+
+    const requestBody = {
+      token: authToken,
+      userId,
+    };
+
+    // Send a POST request with the token in the request body
+    return this.http.post(`${this.apiUrl}/auth/getUserFromUserId`, requestBody);
+  }
   register(formData: FormData) {
     return this.http.post(`${this.apiUrl}/auth/register`, formData).pipe(
       tap((response: any) => {
@@ -62,7 +228,7 @@ export class AuthService {
             .split('')
             .map((char) => char.charCodeAt(0))
         );
-
+        console.log(response);
         // Save token and user data to Ionic Storage
         this.storage.set(this.tokenKey, response.token);
         this.storage.set('user-details', {
@@ -77,9 +243,7 @@ export class AuthService {
     // Assuming you get a token after successful login
     return this.http.post(`${this.apiUrl}/auth/login`, loginData).pipe(
       tap((response: any) => {
-        console.log(response);
         const decodedToken = this.jwtHelper.decodeToken(response.token);
-        console.log(decodedToken);
         const profilePictureArray = new Uint8Array(
           atob(decodedToken.profilePicture)
             .split('')
@@ -89,13 +253,21 @@ export class AuthService {
         // Save token and user data to Ionic Storage
         this.storage.set(this.tokenKey, response.token);
         this.storage.set('user-details', {
-          ...decodedToken,
+          email: decodedToken.email,
+          userId: decodedToken.userId,
+          username: decodedToken.username,
           profilePicture: profilePictureArray,
         });
       })
     );
   }
-
+  logout(): void {
+    // Remove the token from storage
+    this.storage.remove(this.tokenKey).then(() => {
+      // Navigate to the login page
+      this.router.navigate(['/login']);
+    });
+  }
   public async getChatOrder(list: any) {
     const chatOrderArray = [];
     const userDetails = await this.storage.get('user-details');
@@ -142,10 +314,5 @@ export class AuthService {
     // Now, chatOrderArray contains an array of JSON objects with the required information
     console.log('Chat Order Array:', chatOrderArray);
     return chatOrderArray;
-  }
-
-  private getHeaders(): HttpHeaders {
-    const token = 'MohamadSecureCode1999'; // Replace with the actual token
-    return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 }

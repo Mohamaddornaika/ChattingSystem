@@ -14,6 +14,10 @@ router.post(
 );
 
 router.post('/login', authController.loginUser);
-router.get('/getUserFromEmail', verifyToken, authController.getUserFromEmail);
-
+router.post('/getUserFromEmail', verifyToken, authController.getUserFromEmail);
+router.post(
+  '/getUserFromUserId',
+  verifyToken,
+  authController.getUserFromUserId,
+);
 module.exports = router;

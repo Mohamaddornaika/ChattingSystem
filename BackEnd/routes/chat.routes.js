@@ -16,4 +16,9 @@ router.post(
   verifyToken,
   chatController.getAllConversationsForUserWithDetails,
 );
+router.post(
+  '/getAllConversationsFor2Users/:user1Id/:user2Id',
+  verifyToken,
+  chatController.getAllConversationsFor2Users,
+);
 module.exports = router;

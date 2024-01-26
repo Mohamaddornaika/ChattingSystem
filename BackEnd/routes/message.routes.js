@@ -8,7 +8,7 @@ const { server, io } = require('../middleware/socket');
 
 // Routes
 router.post('/sendMessages', verifyToken, messageController.createMessage);
-router.get(
+router.post(
   '/messages/:conversationId',
   verifyToken,
   messageController.getMessagesForConversation,

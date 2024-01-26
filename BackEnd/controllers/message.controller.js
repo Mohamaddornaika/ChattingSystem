@@ -2,18 +2,18 @@ const messageModel = require('../models/message.model');
 const { io } = require('../middleware/socket');
 
 async function createMessage(req, res) {
-  const { conversationId, content } = req.body;
-  const senderId = req.userId; // Get sender ID from the token
+  console.log(req.body);
+  const { conversationId, content, userId } = req.body;
 
+  console.log(conversationId, userId, content);
   try {
     const messageId = await messageModel.createMessage(
       conversationId,
-      senderId,
+      userId,
       content,
     );
-
     // Emit the new message to the conversation's WebSocket room
-    io.to(conversationId).emit('newMessage', { messageId, senderId, content });
+    io.to(conversationId).emit('newMessage', { messageId, userId, content });
 
     res.status(201).json({ messageId });
   } catch (error) {

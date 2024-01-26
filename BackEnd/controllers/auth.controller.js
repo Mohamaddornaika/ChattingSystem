@@ -1,8 +1,14 @@
 const db = require('../models/user.model');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
 
 const secretKey = 'MohamadSecureCode1999';
-
+const storage = multer.memoryStorage(); // Store the file in memory
+const upload = multer({ storage: storage });
+function getDefaultImageBuffer() {
+  const base64DefaultImage = '../pfp.jpg'; // Base64-encoded image data
+  return Buffer.from(base64DefaultImage, 'base64');
+}
 async function createUser(req, res) {
   const { username, email, password } = req.body;
 
@@ -14,7 +20,7 @@ async function createUser(req, res) {
     } else {
       // Handle the case where req.file is undefined
       console.log('No file uploaded');
-      profilePicture = null; // or set a default value
+      profilePicture = getDefaultImageBuffer(); // or set a default value
     }
 
     // Try to create the user
@@ -27,8 +33,8 @@ async function createUser(req, res) {
 
     // If successful, generate a JWT token
     const user = { email: email };
-    const profilePictureBuffer = user.profile_picture;
-    const profilePictureBase64 = profilePictureBuffer.toString('base64');
+    // const profilePictureBuffer = user.profile_picture;
+    const profilePictureBase64 = profilePicture.toString('base64');
 
     const token = jwt.sign(
       {
@@ -89,10 +95,40 @@ async function loginUser(req, res) {
     res.status(500).json({ error: 'Internal server error' });
   }
 }
+async function getUserFromUserId(req, res) {
+  const { userId } = req.body;
+  console.log(req.body);
+  console.log(userId);
+  try {
+    // Step 2: Query the database to check if the user exists
+    const user = await db.getUserByUserIdWithoutPassword(userId);
 
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
+    }
+
+    // Retrieve the profile picture buffer from the request
+    const profilePictureBuffer = user.profile_picture;
+
+    const token = {
+      userId: user.user_id,
+      username: user.username,
+      email: user.email,
+      profilePicture: profilePictureBuffer,
+      // Add more user details as needed
+    };
+
+    console.log('User Found!');
+    res.status(200).json({ token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
 async function getUserFromEmail(req, res) {
   const { email } = req.body;
-
+  console.log(req.body);
+  console.log(email);
   try {
     // Step 2: Query the database to check if the user exists
     const user = await db.getUserByEmailWithoutPassword(email);
@@ -123,6 +159,7 @@ module.exports = {
   createUser,
   loginUser,
   getUserFromEmail,
+  getUserFromUserId,
 };
 
 /*

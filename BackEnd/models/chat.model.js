@@ -19,6 +19,14 @@ async function getAllConversationsForUser(userId) {
   const [results] = await db.query(query, [userId, userId]);
   return results;
 }
+async function getAllConversationsFor2Users(user1Id, user2Id) {
+  const query = `
+    SELECT * FROM conversations
+    WHERE (user1_id = ? AND user2_id = ?) OR (user1_id = ? AND user2_id = ?)
+  `;
+  const [results] = await db.query(query, [user1Id, user2Id, user2Id, user1Id]);
+  return results;
+}
 async function getAllConversationsForUserWithDetails(userId) {
   const query = `
     SELECT
@@ -63,4 +71,5 @@ module.exports = {
   createConversation,
   getAllConversationsForUser,
   getAllConversationsForUserWithDetails,
+  getAllConversationsFor2Users,
 };

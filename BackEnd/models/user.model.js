@@ -32,9 +32,15 @@ async function getUserByEmailWithoutPassword(email) {
   const [results] = await db.query(query, [email]);
   return results[0] || null;
 }
-
+async function getUserByUserIdWithoutPassword(user_id) {
+  const query =
+    'SELECT user_id, username, email, profile_picture FROM users WHERE user_id = ?';
+  const [results] = await db.query(query, [user_id]);
+  return results[0] || null;
+}
 module.exports = {
   createUser,
+  getUserByUserIdWithoutPassword,
   //   updateProfilePicture,
   getUserByEmail,
   comparePasswords,
